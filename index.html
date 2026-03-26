@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IABIED Thumbnail Test Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0" integrity="sha384-cVMg8E3QFwTvGCDuK+ET4PD341jF3W8nO1auiXfuZNQkzbUUiBGLsIQUE+b1mxws" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --bg-primary: #f5f6f8;
+            --bg-card: #ffffff;
+            --bg-header: #1a1a2e;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-on-dark: #ffffff;
+            --positive: #28a745;
+            --negative: #dc3545;
+            --neutral: #6c757d;
+            --gap: 16px;
+            --radius: 8px;
+            --win: #d4edda;
+            --win-border: #28a745;
+            --lose: #f8d7da;
+            --lose-border: #dc3545;
+            --tie: #fff3cd;
+            --tie-border: #ffc107;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--gap);
+        }
+
+        .dashboard-header {
+            background: var(--bg-header);
+            color: var(--text-on-dark);
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            margin-bottom: var(--gap);
+        }
+
+        .dashboard-header h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+        .dashboard-header .subtitle { font-size: 14px; opacity: 0.7; }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: var(--gap);
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            background: none;
+            border-top: none; border-left: none; border-right: none;
+        }
+
+        .tab:hover { color: var(--text-primary); }
+        .tab.active { color: #4C72B0; border-bottom-color: #4C72B0; font-weight: 600; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* KPI Row */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--gap);
+            margin-bottom: var(--gap);
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .kpi-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .kpi-value { font-size: 26px; font-weight: 700; }
+        .kpi-detail { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+        /* Filter bar */
+        .filter-bar {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 12px 20px;
+            margin-bottom: var(--gap);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+
+        .filter-bar select, .filter-bar input[type="text"] {
+            padding: 6px 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+        }
+
+        .filter-bar input[type="text"] { width: 260px; }
+
+        .filter-clear {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: var(--text-secondary);
+        }
+        .filter-clear:hover { border-color: var(--negative); color: var(--negative); }
+
+        /* Thumbnail grid for "By Thumbnail" tab */
+        .thumb-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--gap);
+            margin-bottom: var(--gap);
+        }
+
+        .thumb-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+
+        .thumb-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .thumb-card.selected { border: 2px solid #4C72B0; }
+
+        .thumb-card-img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background: #e9ecef;
+        }
+
+        .thumb-card-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .thumb-card-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .thumb-card-stats .num { font-weight: 600; }
+        .win-rate { color: var(--positive); }
+        .lose-rate { color: var(--negative); }
+
+        .thumb-card-bar {
+            height: 5px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .thumb-card-bar-fill { height: 100%; border-radius: 3px; }
+
+        .thumb-card-tests { font-size: 11px; color: var(--text-secondary); }
+
+        /* Test Timeline cards */
+        .test-list { display: flex; flex-direction: column; gap: 16px; }
+
+        .test-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-left: 4px solid #dee2e6;
+        }
+
+        .test-card.result-win { border-left-color: var(--win-border); }
+        .test-card.result-tie { border-left-color: var(--tie-border); }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .test-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .test-num {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .test-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .slack-link {
+            color: #4C72B0;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .slack-link:hover { text-decoration: underline; }
+
+        /* Thumbnail options row */
+        .test-thumbs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .test-thumb-option {
+            border: 3px solid #e9ecef;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+
+        .test-thumb-option.winner {
+            border-color: var(--win-border);
+            background: var(--win);
+        }
+
+        .test-thumb-option.loser {
+            border-color: var(--lose-border);
+            background: var(--lose);
+        }
+
+        .test-thumb-option.tied {
+            border-color: var(--tie-border);
+            background: var(--tie);
+        }
+
+        .test-thumb-option .option-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .test-thumb-option.winner .option-label { color: var(--positive); }
+        .test-thumb-option.loser .option-label { color: var(--negative); }
+        .test-thumb-option.tied .option-label { color: #e0a800; }
+
+        .test-thumb-option img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 3px;
+            background: #f0f0f0;
+        }
+
+        .test-thumb-option .thumb-name {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        .winner-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--positive);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .test-finding {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #dee2e6;
+        }
+
+        /* Detail panel */
+        .detail-panel {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: var(--gap);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            display: none;
+        }
+
+        .detail-panel.visible { display: block; }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .detail-title { font-size: 18px; font-weight: 600; }
+
+        .detail-close {
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            padding: 4px 8px;
+        }
+        .detail-close:hover { color: var(--text-primary); }
+
+        .detail-thumb-img {
+            max-width: 320px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: var(--gap);
+        }
+
+        .chart-container h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+        .chart-wrap { height: 300px; position: relative; }
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+
+        @media (max-width: 900px) {
+            .charts-grid { grid-template-columns: 1fr; }
+            .test-thumbs { grid-template-columns: 1fr; }
+        }
+
+        /* Autocomplete dropdown */
+        .autocomplete-wrapper { position: relative; }
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            max-height: 260px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .autocomplete-list.open { display: block; }
+
+        .autocomplete-item {
+            padding: 6px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .autocomplete-item:hover { background: #f0f4ff; }
+        .autocomplete-item img { width: 48px; height: 27px; object-fit: cover; border-radius: 2px; }
+        .autocomplete-item .ac-name { flex: 1; }
+        .autocomplete-item .ac-stats { font-size: 11px; color: var(--text-secondary); }
+
+        /* Sort controls */
+        .sort-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: var(--gap);
+        }
+
+        .sort-bar label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+        .sort-bar select {
+            padding: 6px 10px; border: 1px solid #dee2e6; border-radius: 4px; font-size: 13px; background: white;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>IABIED Thumbnail A/B Test Tracker</h1>
+        <div class="subtitle">If Anyone Builds It, Everyone Dies &mdash; 80,000 Hours YouTube</div>
+    </div>
+
+    <div id="kpi-row" class="kpi-row"></div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('thumbnails')">By Thumbnail</button>
+        <button class="tab" onclick="switchTab('timeline')">Test Timeline</button>
+        <button class="tab" onclick="switchTab('insights')">Insights</button>
+    </div>
+
+    <!-- TAB: By Thumbnail -->
+    <div id="tab-thumbnails" class="tab-content active">
+        <div class="sort-bar">
+            <label>Sort by:</label>
+            <select id="thumb-sort" onchange="renderThumbGrid()">
+                <option value="tests">Most Tested</option>
+                <option value="winrate">Win Rate</option>
+                <option value="recent">Most Recent</option>
+                <option value="alpha">Alphabetical</option>
+            </select>
+            <label style="margin-left:16px">Min tests:</label>
+            <select id="thumb-min" onchange="renderThumbGrid()">
+                <option value="1">1+</option>
+                <option value="2">2+</option>
+                <option value="3">3+</option>
+            </select>
+        </div>
+        <div id="thumb-grid" class="thumb-grid"></div>
+        <div id="thumb-detail" class="detail-panel">
+            <div class="detail-header">
+                <div id="thumb-detail-title" class="detail-title"></div>
+                <button class="detail-close" onclick="closeThumbDetail()">&times;</button>
+            </div>
+            <div id="thumb-detail-content"></div>
+        </div>
+    </div>
+
+    <!-- TAB: Test Timeline -->
+    <div id="tab-timeline" class="tab-content">
+        <div class="filter-bar">
+            <label>Filter by thumbnail:</label>
+            <div class="autocomplete-wrapper">
+                <input type="text" id="thumb-filter-input" placeholder="Type to search thumbnails..." oninput="onThumbFilterInput()" onfocus="onThumbFilterInput()">
+                <div id="thumb-filter-list" class="autocomplete-list"></div>
+            </div>
+            <span id="active-filter-label" style="font-size:12px; color:#4C72B0; font-weight:600; display:none"></span>
+            <button class="filter-clear" id="filter-clear-btn" onclick="clearThumbFilter()" style="display:none">Clear filter</button>
+        </div>
+        <div id="test-list" class="test-list"></div>
+    </div>
+
+    <!-- TAB: Insights -->
+    <div id="tab-insights" class="tab-content">
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h3>Test Duration Over Time</h3>
+                <div class="chart-wrap"><canvas id="timeline-chart"></canvas></div>
+            </div>
+            <div class="chart-container">
+                <h3>Win/Loss by Top Thumbnails</h3>
+                <div class="chart-wrap"><canvas id="winrate-chart"></canvas></div>
+            </div>
+        </div>
+        <div class="chart-container">
+            <h3>Cumulative Wins Over Time</h3>
+            <div class="chart-wrap"><canvas id="evolution-chart"></canvas></div>
+        </div>
+        <div class="chart-container">
+            <h3>Key Findings</h3>
+            <div id="findings-content"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ========== IMAGE MAP: thumbnail name (lowercase) → Google Drive file ID ==========
+const IMAGE_MAP = {
+    "if anyone builds it everyone dies red text over still zoomed out": "1hK0kC1SiOxGpspyoqwzVr2MFPfuQS7IC",
+    "i'm more worried now yellow text": "1exvLXe-6dwlXrwpU-oFAT0Zdg15gNKlH",
+    "if anyone builds it white text over silhouette": "1j2oYy_PfQPm9zfTAux-zjh3T0vyK25pr",
+    "i wish we were exaggerating": "1TaGxyUCHB1srsGgvPbynMhKMDh4FZOr2",
+    "we're not ready for superintelligence": "1VYKpfxq-fnixS9rFYukILOdspgh5sywU",
+    "green utopia": "1Q9Se6onvnGmlsHQVUct-qtvcHgtQbjpb",
+    "book title over tvs": "1Iq3SUPXBIScYiG12NXjreG2MWlcQL6CE",
+    "everyone dies (yes, everyone) white sansserif": "1G6ByNLF6XVlM0AWdjOvU5uYAydTqseBo",
+    "everyone dies (yes everyone) white sansserif": "1G6ByNLF6XVlM0AWdjOvU5uYAydTqseBo",
+    "everyone dies wish i was exaggerating": "1DGXqaydLHw6CCM6JXyWDvSO-9yiqoxKd",
+    "what the fuck calm face": "1Dw-QipUT4UX56ykwiU-yZQ9g8wyH48K3",
+    "everyone dies (yes everyone) skeptic new still": "1bwcLR20Q-AsJGSq2ObHG74EMxUbu42Qe",
+    "everyone dies (yes everyone) skeptical new still": "1bwcLR20Q-AsJGSq2ObHG74EMxUbu42Qe",
+    "trained not to bite electronic shark": "17DVjcfC0__N7uUJQbLRmMr4ViSApLiwV",
+    "ai is a black box": "1imIhWBOknSANk1KTmNwlgDjGmZDxWPXC",
+    "you don't get what you train for split world": "1_jwr-Bw-D1JaLWAIp9jDNOxotRxGa7dv",
+    "what the fuck with hand and book": "1Co5yoC5Y1Qr2kyXAFThz3sOz88tX2uaD",
+    "what the fuck aric as u with globe": "1At_6t3t-Dzpx5w_CY6zAM5s5vKiCQaFD",
+    "what the fuck aric with globe blurrily": "1S11Dp0f1wk7ISzTbHJhEXWwZhN2uWcuH",
+    "what the fuck aric with globe blurry": "1S11Dp0f1wk7ISzTbHJhEXWwZhN2uWcuH",
+    "what the fuck green utopia": "1MALGx_AbjKVlmc6YReL03DCBTMPkhLKO",
+    "what the fuck purple utopia": "1vJIYwLf6fQ48B7Dgs1wM3tnKe26XHuKd",
+    "what the fuck purple utopia with ?!?": "1Do6uGjK5yKFqp9II06ne5fs1YPaW7YiV",
+    "what the fuck aric as u with globe sharp": "1iIq9VSuL5evY0KsprFjSg6N0_8q7HZbp",
+    "what the fuck aric with globe sharp": "1iIq9VSuL5evY0KsprFjSg6N0_8q7HZbp",
+    "fuck this purple utopia": "1tvPtM6CRXdDT5W4Ij50YDCb8L0pfuqIY",
+    "what extinction looks like purple utopia": "128EiQ5kviFei0a7YoVhPrT50AjAuVEdz",
+    "what extinction looks like aric with light": "1h3yD8k2-nDCdbtskPmnE0RVGMO2LXEhh",
+    "ascent of man": "1e0wKzr0UtJxrFYVFKCfMwcIVHmSuEslK",
+    "everyone dies graph": "1zTvRM9ZKbVJdES0mHiK3i-yUA98gKqTC",
+    "everyone dies graph black with skull": "1myMhEfY7tc8I_hgBn0PejrGKv21o1G5w",
+    "everyone dies graph with white skull": "1lThxBppiEiv3375HH9EXcySOY6VL93M3",
+    "everyone dies graph over tvs": "1liMnF7TncaZL4MKESFuzXYXBuoEC-N00",
+    "everyone dies ascent of man": "1V1XFlC8t6nEB3DlXgbvZSGMowdLEdQlw",
+    "i'm more worried now red worried": "17jG1j1BRsXeDDObje1WnHWBRsVu3HceY",
+    "if anyone builds it everyone dies sansserif over globe": "1hRjZQ7hKCWDSCl1INA9_-a8dhhq0ScQG",
+    "glowing comment - teary eyed": "1ZBvmb4oyKDTwPzQaVBELchfauUTf64PN",
+    "i'm more worried now with ai ceos": "1hTpRkeTdJsHrmRRfeUhbNiH4CPFl4Nml",
+    "glowing comment - best of youtube": "1am7to-fvoheI6kGjwxvUvkqNBCPHBI7C",
+    "25% chance": "1PmW88GpqnULJuZqo2bamGy-eBj3o-wjV",
+    "freaking out congreement": "1pKuvMn_vsEjjA2ipNjvaioWCaojz-bsf",
+    "freaking out concgreemen": "1pKuvMn_vsEjjA2ipNjvaioWCaojz-bsf",
+    "if anyone builds it everyone dies split face": "1U819-Ci3VVu13X5kpgPIvZmPWUoN6JHG",
+    "everyone dies graph + most important book of the decade": "189y4TTtkf8RFfZ0aaFjLrmqoU223dMMA",
+    "most important book of the decade": "1Wrczl14ahStaxi-JzJ-6HD7Z5EIVFU2R",
+    "everyone dies graph multi color": "1V9MWUbry7YxaLFeJNN_m3Nuiy5BHJKat",
+    "you don't get what you train for text": "1V6-iUk4ztXgnamxANhSiuwsFYdCTnfub",
+    "everyone dies graph over aric": "1JIwsiJZU4AbUT-VNutP611IUku-03VJ0",
+    "everyone dies utopia": "1AGEQfg9ePfH3HwEJMYd7nd_7SAWjGgT0",
+    "utopia": "1Q9Se6onvnGmlsHQVUct-qtvcHgtQbjpb",
+    "black box no text": "1dVXznDNs0P1ZNaSI12wtRNIYaPIIwYHf",
+    "every()ne dies serif fancy red text": "1AA2N7E_xuUg365pRKuMMz9A7z1YpHp6-"
+};
+
+// For compound names like "WTF + title" or "thumbnail + title", map to the base thumbnail image
+const COMPOUND_BASES = {
+    "i'm more worried now yellow text + old title": "i'm more worried now yellow text",
+    "i'm more worried now yellow text + the ai book freaking out nat sec advisors": "i'm more worried now yellow text",
+    "wtf + ai book breaking out nat sec advisors": "what the fuck calm face",
+    "wtf + long combined title": "what the fuck calm face",
+    "what the fuck calm face + straightforward argument": "what the fuck calm face",
+    "what the fuck calm face + ai book freaking out": "what the fuck calm face",
+    "what the fuck calm face + if anyone builds it everyone dies": "what the fuck calm face",
+    "what the fuck green utopia + the future is not safe": "what the fuck green utopia",
+    "what the fuck green utopia + freaking out advisors": "what the fuck green utopia",
+    "what the fuck purple utopia + freaking out advisors": "what the fuck purple utopia"
+};
+
+function getImageUrl(name, size) {
+    size = size || 400;
+    const key = name.toLowerCase().trim();
+    let fileId = IMAGE_MAP[key];
+    if (!fileId && COMPOUND_BASES[key]) {
+        fileId = IMAGE_MAP[COMPOUND_BASES[key]];
+    }
+    if (!fileId) {
+        // Try fuzzy match
+        for (const [mapKey, mapId] of Object.entries(IMAGE_MAP)) {
+            if (key.includes(mapKey) || mapKey.includes(key)) {
+                fileId = mapId;
+                break;
+            }
+        }
+    }
+    if (fileId) {
+        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`;
+    }
+    return null;
+}
+
+// ========== TEST DATA ==========
+const TESTS = [
+    {
+        num: 1, start: "2026-03-10 17:07", end: "2026-03-10 18:55", duration: 1.8,
+        tester: "Chana/Aric", slackTs: "1773187642.062139",
+        optionA: "If anyone builds it everyone dies red text over still zoomed out",
+        optionB: "I'm more worried now yellow text",
+        optionC: "If anyone builds it white text over silhouette",
+        winner: "B",
+        finding: "Option B had huge lead initially, evened out but stayed ahead"
+    },
+    {
+        num: 2, start: "2026-03-10 18:57", end: "2026-03-10 22:32", duration: 3.6,
+        tester: "Aric", slackTs: "1773194236.810489",
+        optionA: "I wish we were exaggerating",
+        optionB: "I'm more worried now yellow text",
+        optionC: "We're not ready for superintelligence",
+        winner: "B",
+        finding: "Title variations test - sticking with 'If Anyone Builds It Everyone Dies' title"
+    },
+    {
+        num: 3, start: "2026-03-10 22:57", end: "2026-03-11 06:57", duration: 8.0,
+        tester: "Aric", slackTs: "1773208623.755529",
+        optionA: "I'm more worried now yellow text + old title",
+        optionB: "I'm more worried now yellow text + The AI book freaking out nat sec advisors",
+        optionC: "Green utopia",
+        winner: "B",
+        finding: "New title 'The AI book that's freaking out national security advisors' outperformed"
+    },
+    {
+        num: 4, start: "2026-03-11 07:13", end: "2026-03-11 10:16", duration: 3.0,
+        tester: "Aric", slackTs: "1773238419.237909",
+        optionA: "I'm more worried now yellow text",
+        optionB: "Book title over TVs",
+        optionC: "Everyone dies (yes, everyone) white sansserif",
+        winner: "A",
+        finding: "No person/book visible clearly underperformed"
+    },
+    {
+        num: 5, start: "2026-03-11 12:00", end: "2026-03-11 13:35", duration: 1.6,
+        tester: "Aric", slackTs: "1773255626.001399",
+        optionA: "Everyone dies (yes, everyone) white sansserif",
+        optionB: "Everyone dies wish I was exaggerating",
+        optionC: "What the fuck calm face",
+        winner: "C",
+        finding: "WTF clearest winner yet - 'not thrilled about it'",
+        watchTime: 40.3
+    },
+    {
+        num: 6, start: "2026-03-11 13:55", end: "2026-03-11 18:41", duration: 4.8,
+        tester: "Aric", slackTs: "1773262831.195589",
+        optionA: "WTF + AI book breaking out nat sec advisors",
+        optionB: "WTF + long combined title",
+        optionC: "Everyone dies (yes everyone) skeptic new still",
+        winner: "A",
+        finding: "WTF + 'AI book freaking out' clear outperformer. Bigger face underperformed"
+    },
+    {
+        num: 7, start: "2026-03-11 18:45", end: "2026-03-11 20:09", duration: 1.4,
+        tester: "Aric", slackTs: "1773279942.075269",
+        optionA: "What the fuck calm face",
+        optionB: "Trained not to bite electronic shark",
+        optionC: "AI is a black box",
+        winner: "A",
+        finding: "Shark flopped"
+    },
+    {
+        num: 8, start: "2026-03-11 22:55", end: "2026-03-12 07:07", duration: 8.2,
+        tester: "Aric", slackTs: "1773294938.569279",
+        optionA: "What the fuck calm face",
+        optionB: "What the fuck calm face + straightforward argument",
+        optionC: "You don't get what you train for split world",
+        winner: "AB",
+        finding: "A and B tied. WTF a clear winner, two titles work equally well with it"
+    },
+    {
+        num: 9, start: "2026-03-12 08:01", end: "2026-03-12 10:55", duration: 2.9,
+        tester: "Aric", slackTs: "1773327822.588939",
+        optionA: "What the fuck calm face",
+        optionB: "What the fuck with hand and book",
+        optionC: "What the fuck aric as U with globe",
+        winner: "C",
+        finding: "Cinematic still from video won. Niel predicted middle would lose (correct!)"
+    },
+    {
+        num: 10, start: "2026-03-12 11:00", end: "2026-03-12 16:52", duration: 5.9,
+        tester: "Aric", slackTs: "1773338356.127339",
+        optionA: "What the fuck calm face + AI book freaking out",
+        optionB: "What the fuck calm face + straightforward argument",
+        optionC: "What the fuck calm face + If Anyone Builds It Everyone Dies",
+        winner: "TIE",
+        finding: "Titles roughly equal (IABIED slightly ahead). No significant difference."
+    },
+    {
+        num: 11, start: "2026-03-12 17:03", end: "2026-03-12 18:24", duration: 1.3,
+        tester: "Aric", slackTs: "1773360306.739819",
+        optionA: "What the fuck aric as U with globe",
+        optionB: "What the fuck aric with globe blurrily",
+        optionC: "What the fuck green utopia",
+        winner: "C",
+        finding: "New winner by surprisingly large amount",
+        watchTime: 41.1
+    },
+    {
+        num: 12, start: "2026-03-12 18:32", end: "2026-03-12 20:03", duration: 1.5,
+        tester: "Aric", slackTs: "1773365638.660519",
+        optionA: "What the fuck green utopia + the future is not safe",
+        optionB: "What the fuck green utopia + freaking out advisors",
+        optionC: "What the fuck purple utopia + freaking out advisors",
+        winner: "C",
+        finding: "Purple utopia won - Aric's prediction was completely wrong"
+    },
+    {
+        num: 13, start: "2026-03-12 22:15", end: "2026-03-12 23:52", duration: 1.6,
+        tester: "Aric", slackTs: "1773379145.726839",
+        optionA: "What the fuck purple utopia",
+        optionB: "What the fuck purple utopia with ?!?",
+        optionC: "What the fuck aric as U with globe sharp",
+        winner: "B",
+        finding: "?!? variant won, stopped early"
+    },
+    {
+        num: 14, start: "2026-03-13 00:55", end: "2026-03-13 02:25", duration: 1.5,
+        tester: "Aric", slackTs: "1773388655.878489",
+        optionA: "What the fuck purple utopia with ?!?",
+        optionB: "What the fuck purple utopia with ?!?",
+        optionC: "Fuck this purple utopia",
+        winner: "A",
+        finding: "Stopped early"
+    },
+    {
+        num: 15, start: "2026-03-13 03:30", end: "2026-03-13 07:36", duration: 4.1,
+        tester: "Aric", slackTs: "1773484455.687649",
+        optionA: "What the fuck purple utopia with ?!?",
+        optionB: "Everyone dies (yes everyone) white sansserif",
+        optionC: "What the fuck aric as U with globe",
+        winner: "TIE",
+        finding: "All roughly tied"
+    },
+    {
+        num: 16, start: "2026-03-13 08:02", end: "2026-03-13 11:59", duration: 4.0,
+        tester: "Aric", slackTs: "1773416126.193189",
+        optionA: "Everyone dies (yes everyone) white sansserif",
+        optionB: "What extinction looks like purple utopia",
+        optionC: "What extinction looks like aric with light",
+        winner: "A",
+        finding: "Distributional shift confirmed. Things changed a lot in 2 days."
+    },
+    {
+        num: 17, start: "2026-03-13 16:15", end: "2026-03-13 19:55", duration: 3.7,
+        tester: "Aric", slackTs: "1773443884.952869",
+        optionA: "Everyone dies (yes everyone) white sansserif",
+        optionB: "I'm more worried now yellow text",
+        optionC: "If anyone builds it everyone dies red text over still zoomed out",
+        winner: "A",
+        finding: "EVERYONE DIES stayed on top"
+    },
+    {
+        num: 18, start: "2026-03-13 20:05", end: "2026-03-13 23:30", duration: 3.4,
+        tester: "Aric", slackTs: "1773470252.788709",
+        optionA: "Everyone dies (yes everyone) white sansserif",
+        optionB: "Ascent of man",
+        optionC: "Everyone dies graph",
+        winner: "C",
+        finding: "Graph first appeared and won. Could look better with more pop."
+    },
+    {
+        num: 19, start: "2026-03-14 03:30", end: "2026-03-14 07:36", duration: 4.1,
+        tester: "Aric", slackTs: "1773498977.585239",
+        optionA: "Everyone dies graph",
+        optionB: "Everyone dies graph black with skull",
+        optionC: "Everyone dies graph with white skull",
+        winner: "A",
+        finding: "Plain graph beat skull variants"
+    },
+    {
+        num: 20, start: "2026-03-14 11:10", end: "2026-03-15 15:30", duration: 28.3,
+        tester: "Nik", slackTs: "1773511815.492649",
+        optionA: "Everyone dies graph",
+        optionB: "Everyone dies graph over tvs",
+        optionC: "Everyone dies ascent of man",
+        winner: "AB",
+        finding: "A and B tied. Taking long to reach significance."
+    },
+    {
+        num: 21, start: "2026-03-15 16:20", end: "2026-03-15 18:11", duration: 1.9,
+        tester: "Aric", slackTs: "1773616858.471669",
+        optionA: "Everyone dies graph",
+        optionB: "Everyone dies graph over tvs",
+        optionC: "What the fuck calm face",
+        winner: "A",
+        finding: "Graph beat WTF head-to-head. Ascent of Man clearly underperformed."
+    },
+    {
+        num: 22, start: "2026-03-15 18:12", end: "2026-03-15 23:02", duration: 4.8,
+        tester: "Aric", slackTs: "1773623632.975179",
+        optionA: "Everyone dies graph",
+        optionB: "I'm more worried now red worried",
+        optionC: "If anyone builds it everyone dies sansserif over globe",
+        winner: "A",
+        finding: "Graph won again"
+    },
+    {
+        num: 23, start: "2026-03-16 10:00", end: "2026-03-16 11:57", duration: 2.0,
+        tester: "Aric", slackTs: "1773680463.377309",
+        optionA: "Everyone dies graph",
+        optionB: "Glowing comment - teary eyed",
+        optionC: "Everyone dies graph over tvs",
+        winner: "C",
+        finding: "Graph over TVs won. Graph on its own similar. Glowing comment lost badly - most intense result ever."
+    },
+    {
+        num: 24, start: "2026-03-16 12:04", end: "2026-03-16 13:06", duration: 1.0,
+        tester: "Chana", slackTs: "1773687839.144919",
+        optionA: "I'm more worried now with AI CEOs",
+        optionB: "Glowing comment - best of YouTube",
+        optionC: "25% chance",
+        winner: "A",
+        finding: "Variance test. Last hour did worse than previous."
+    },
+    {
+        num: 25, start: "2026-03-16 13:20", end: "2026-03-16 14:02", duration: 0.7,
+        tester: "Chana", slackTs: "1773692407.711549",
+        optionA: "Everyone dies graph",
+        optionB: "Freaking out congreement",
+        optionC: "If anyone builds it everyone dies split face",
+        winner: "A",
+        finding: "Nothing beats the graph"
+    },
+    {
+        num: 26, start: "2026-03-16 14:25", end: "2026-03-16 16:01", duration: 1.6,
+        tester: "Chana", slackTs: "1773696309.490359",
+        optionA: "Everyone dies graph",
+        optionB: "Everyone dies graph + most important book of the decade",
+        optionC: "Most important book of the decade",
+        winner: "A",
+        finding: "Plain graph still on top. Views continuing to drop."
+    },
+    {
+        num: 27, start: "2026-03-16 16:15", end: "2026-03-16 19:22", duration: 3.1,
+        tester: "Sage", slackTs: "1773702902.325039",
+        optionA: "Everyone dies graph",
+        optionB: "Everyone dies graph multi color",
+        optionC: "You don't get what you train for text",
+        winner: "B",
+        finding: "Multi-color graph variant won"
+    },
+    {
+        num: 28, start: "2026-03-17 12:10", end: "2026-03-17 14:10", duration: 2.0,
+        tester: "Chana", slackTs: "1773774649.016629",
+        optionA: "Everyone dies graph multi color",
+        optionB: "Everyone dies graph over aric",
+        optionC: "What the fuck purple utopia",
+        winner: "B",
+        finding: "Graph over Aric won"
+    },
+    {
+        num: 29, start: "2026-03-17 17:18", end: "2026-03-17 18:46", duration: 1.5,
+        tester: "Chana", slackTs: "1773793083.014149",
+        optionA: "Everyone dies graph",
+        optionB: "Everyone dies graph multi color",
+        optionC: null,
+        winner: "A",
+        finding: "Basic graph + current title seems unbeatable"
+    },
+    {
+        num: 30, start: "2026-03-19 09:18", end: "2026-03-19 10:54", duration: 1.6,
+        tester: "Chana", slackTs: "1773937135.120499",
+        optionA: "Everyone dies graph",
+        optionB: "Everyone dies graph multi color",
+        optionC: null,
+        winner: "TIE",
+        finding: "Graphs do about equally. The concept wins; specific execution matters less."
+    },
+    {
+        num: 31, start: "2026-03-24 22:11", end: "2026-03-25 08:54", duration: 10.7,
+        tester: "Aric", slackTs: "1774415577.127239",
+        optionA: "Everyone dies graph",
+        optionB: "What the fuck calm face",
+        optionC: "Everyone dies utopia",
+        winner: "C",
+        finding: "Utopian concept vastly outperformed. Little difference between winner and WTF. Overall views still quite low."
+    }
+];
+
+// ========== HELPERS ==========
+function getOptions(test) {
+    const opts = [];
+    if (test.optionA) opts.push({ label: 'A', name: test.optionA });
+    if (test.optionB) opts.push({ label: 'B', name: test.optionB });
+    if (test.optionC) opts.push({ label: 'C', name: test.optionC });
+    return opts;
+}
+
+function isWinner(test, label) {
+    if (!test.winner) return false;
+    const w = test.winner.toUpperCase();
+    if (w === 'TIE') return false;
+    if (w === 'AB') return label === 'A' || label === 'B';
+    return w.includes(label);
+}
+
+function isTie(test) {
+    if (!test.winner) return true;
+    return test.winner.toUpperCase() === 'TIE';
+}
+
+function getWinnerName(test) {
+    if (isTie(test)) return 'Tie';
+    if (test.winner === 'AB') {
+        return `${test.optionA} / ${test.optionB} (tied)`;
+    }
+    if (test.winner === 'A') return test.optionA;
+    if (test.winner === 'B') return test.optionB;
+    if (test.winner === 'C') return test.optionC;
+    return test.winner;
+}
+
+function slackUrl(ts) {
+    return `https://80000hours.slack.com/archives/C08D2QWHV98/p${ts.replace('.', '')}?thread_ts=1773187635.212069&cid=C08D2QWHV98`;
+}
+
+// ========== COMPUTE THUMBNAIL STATS ==========
+function computeThumbStats() {
+    const stats = {};
+
+    TESTS.forEach(test => {
+        const opts = getOptions(test);
+        opts.forEach(opt => {
+            const name = opt.name;
+            const key = name.toLowerCase().trim();
+            if (!stats[key]) {
+                stats[key] = { name, key, tested: 0, won: 0, lost: 0, tied: 0, tests: [], firstSeen: null, lastSeen: null };
+            }
+            stats[key].tested++;
+            stats[key].tests.push({ test, label: opt.label });
+            if (!stats[key].firstSeen || test.start < stats[key].firstSeen) stats[key].firstSeen = test.start;
+            if (!stats[key].lastSeen || test.start > stats[key].lastSeen) stats[key].lastSeen = test.start;
+
+            if (isTie(test)) {
+                stats[key].tied++;
+            } else if (isWinner(test, opt.label)) {
+                stats[key].won++;
+            } else {
+                stats[key].lost++;
+            }
+        });
+    });
+
+    return stats;
+}
+
+const thumbStats = computeThumbStats();
+
+// ========== RENDER KPIs ==========
+function renderKPIs() {
+    const totalTests = TESTS.length;
+    const totalHours = TESTS.reduce((s, t) => s + t.duration, 0).toFixed(1);
+    const uniqueTesters = [...new Set(TESTS.map(t => t.tester))].length;
+    const uniqueThumbs = Object.keys(thumbStats).length;
+
+    const topThumbs = Object.values(thumbStats)
+        .filter(t => t.tested >= 3)
+        .sort((a, b) => (b.won / b.tested) - (a.won / a.tested));
+    const best = topThumbs[0];
+
+    document.getElementById('kpi-row').innerHTML = `
+        <div class="kpi-card">
+            <div class="kpi-label">Total Tests</div>
+            <div class="kpi-value">${totalTests}</div>
+            <div class="kpi-detail">Since March 10, 2026</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Testing Hours</div>
+            <div class="kpi-value">${totalHours}h</div>
+            <div class="kpi-detail">${(totalHours / 24).toFixed(1)} days of testing</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Testers</div>
+            <div class="kpi-value">${uniqueTesters}</div>
+            <div class="kpi-detail">Aric, Chana, Nik, Sage</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Top Thumbnail</div>
+            <div class="kpi-value" style="font-size:16px">${best ? best.name : 'N/A'}</div>
+            <div class="kpi-detail">${best ? Math.round((best.won / best.tested) * 100) + '% win rate (' + best.won + '/' + best.tested + ')' : ''}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Unique Thumbnails</div>
+            <div class="kpi-value">${uniqueThumbs}</div>
+            <div class="kpi-detail">Distinct designs tested</div>
+        </div>
+    `;
+}
+
+// ========== RENDER THUMBNAIL GRID ==========
+function renderThumbGrid() {
+    const sortBy = document.getElementById('thumb-sort').value;
+    const minTests = parseInt(document.getElementById('thumb-min').value);
+    let thumbs = Object.values(thumbStats).filter(t => t.tested >= minTests);
+
+    if (sortBy === 'tests') thumbs.sort((a, b) => b.tested - a.tested);
+    else if (sortBy === 'winrate') thumbs.sort((a, b) => {
+        const rA = a.tested > 0 ? a.won / a.tested : 0;
+        const rB = b.tested > 0 ? b.won / b.tested : 0;
+        return rB - rA || b.tested - a.tested;
+    });
+    else if (sortBy === 'recent') thumbs.sort((a, b) => (b.lastSeen || '').localeCompare(a.lastSeen || ''));
+    else if (sortBy === 'alpha') thumbs.sort((a, b) => a.name.localeCompare(b.name));
+
+    const grid = document.getElementById('thumb-grid');
+    grid.innerHTML = thumbs.map(t => {
+        const winPct = t.tested > 0 ? Math.round((t.won / t.tested) * 100) : 0;
+        const barColor = winPct >= 60 ? 'var(--positive)' : winPct >= 40 ? 'var(--tie-border)' : 'var(--negative)';
+        const imgUrl = getImageUrl(t.name, 400);
+        const testNums = t.tests.map(x => '#' + x.test.num).join(', ');
+
+        return `
+        <div class="thumb-card" onclick="showThumbDetail('${t.key.replace(/'/g, "\\'")}')">
+            ${imgUrl ? `<img class="thumb-card-img" src="${imgUrl}" alt="${t.name}" loading="lazy" onerror="this.style.display='none'">` : '<div class="thumb-card-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:12px">No image</div>'}
+            <div class="thumb-card-name">${t.name}</div>
+            <div class="thumb-card-stats">
+                <span><span class="num">${t.tested}</span> tests</span>
+                <span class="win-rate"><span class="num">${t.won}</span> wins</span>
+                <span class="lose-rate"><span class="num">${t.lost}</span> losses</span>
+                <span><span class="num">${t.tied}</span> ties</span>
+            </div>
+            <div class="thumb-card-bar">
+                <div class="thumb-card-bar-fill" style="width:${winPct}%; background:${barColor}"></div>
+            </div>
+            <div class="thumb-card-tests">Tests: ${testNums}</div>
+        </div>`;
+    }).join('');
+}
+
+// ========== THUMBNAIL DETAIL PANEL ==========
+function showThumbDetail(key) {
+    const t = thumbStats[key];
+    if (!t) return;
+
+    const panel = document.getElementById('thumb-detail');
+    const title = document.getElementById('thumb-detail-title');
+    const content = document.getElementById('thumb-detail-content');
+
+    const imgUrl = getImageUrl(t.name, 600);
+    const winPct = t.tested > 0 ? Math.round((t.won / t.tested) * 100) : 0;
+
+    title.textContent = t.name;
+
+    let html = '';
+    if (imgUrl) {
+        html += `<img class="detail-thumb-img" src="${imgUrl}" alt="${t.name}" onerror="this.style.display='none'">`;
+    }
+    html += `<p style="margin-bottom:16px; font-size:14px; color:var(--text-secondary)">
+        <strong>${t.tested}</strong> tests &bull; <strong>${t.won}</strong> wins &bull; <strong>${t.lost}</strong> losses &bull; <strong>${t.tied}</strong> ties &bull; <strong>${winPct}%</strong> win rate
+    </p>`;
+
+    html += '<div class="test-list">';
+    t.tests.forEach(({ test, label }) => {
+        const won = isWinner(test, label);
+        const tied = isTie(test);
+        const resultClass = tied ? 'result-tie' : won ? 'result-win' : '';
+        const resultLabel = tied ? 'TIE' : won ? 'WON' : 'LOST';
+        const resultColor = tied ? 'var(--tie-border)' : won ? 'var(--positive)' : 'var(--negative)';
+        const url = slackUrl(test.slackTs);
+
+        html += `
+        <div class="test-card ${resultClass}">
+            <div class="test-header">
+                <div class="test-header-left">
+                    <div class="test-num">#${test.num}</div>
+                    <strong style="color:${resultColor}">${resultLabel}</strong>
+                    <span style="font-size:12px;color:var(--text-secondary)">as Option ${label}</span>
+                </div>
+                <div class="test-meta">
+                    <span>${test.start}</span>
+                    <span>${test.duration}h</span>
+                    <span>${test.tester}</span>
+                    <a href="${url}" target="_blank" class="slack-link">View in Slack</a>
+                </div>
+            </div>
+            <div class="test-finding">${test.finding}</div>
+        </div>`;
+    });
+    html += '</div>';
+
+    content.innerHTML = html;
+    panel.classList.add('visible');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeThumbDetail() {
+    document.getElementById('thumb-detail').classList.remove('visible');
+}
+
+// ========== TEST TIMELINE ==========
+let activeThumbFilter = null;
+
+function onThumbFilterInput() {
+    const input = document.getElementById('thumb-filter-input');
+    const list = document.getElementById('thumb-filter-list');
+    const query = input.value.toLowerCase().trim();
+
+    if (query.length === 0) {
+        // Show top thumbnails by test count
+        const top = Object.values(thumbStats).sort((a, b) => b.tested - a.tested).slice(0, 15);
+        renderAutocomplete(top);
+        list.classList.add('open');
+        return;
+    }
+
+    const matches = Object.values(thumbStats)
+        .filter(t => t.name.toLowerCase().includes(query))
+        .sort((a, b) => b.tested - a.tested)
+        .slice(0, 10);
+
+    renderAutocomplete(matches);
+    list.classList.toggle('open', matches.length > 0);
+}
+
+function renderAutocomplete(items) {
+    const list = document.getElementById('thumb-filter-list');
+    list.innerHTML = items.map(t => {
+        const imgUrl = getImageUrl(t.name, 96);
+        return `<div class="autocomplete-item" onclick="selectThumbFilter('${t.key.replace(/'/g, "\\'")}')">
+            ${imgUrl ? `<img src="${imgUrl}" onerror="this.style.display='none'">` : ''}
+            <span class="ac-name">${t.name}</span>
+            <span class="ac-stats">${t.tested} tests, ${t.won} wins</span>
+        </div>`;
+    }).join('');
+}
+
+function selectThumbFilter(key) {
+    const t = thumbStats[key];
+    if (!t) return;
+
+    activeThumbFilter = key;
+    document.getElementById('thumb-filter-input').value = '';
+    document.getElementById('thumb-filter-list').classList.remove('open');
+    document.getElementById('active-filter-label').style.display = 'inline';
+    document.getElementById('active-filter-label').textContent = `Showing: ${t.name}`;
+    document.getElementById('filter-clear-btn').style.display = 'inline';
+    renderTestList();
+}
+
+function clearThumbFilter() {
+    activeThumbFilter = null;
+    document.getElementById('active-filter-label').style.display = 'none';
+    document.getElementById('filter-clear-btn').style.display = 'none';
+    renderTestList();
+}
+
+// Close autocomplete on outside click
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.autocomplete-wrapper')) {
+        document.getElementById('thumb-filter-list').classList.remove('open');
+    }
+});
+
+function renderTestList() {
+    const list = document.getElementById('test-list');
+    let tests = [...TESTS].reverse();
+
+    if (activeThumbFilter) {
+        tests = tests.filter(t => {
+            const opts = getOptions(t);
+            return opts.some(o => o.name.toLowerCase().trim() === activeThumbFilter);
+        });
+    }
+
+    list.innerHTML = tests.map(test => {
+        const opts = getOptions(test);
+        const hasWinner = !isTie(test);
+        const resultClass = hasWinner ? 'result-win' : 'result-tie';
+        const url = slackUrl(test.slackTs);
+
+        const thumbsHtml = opts.map(opt => {
+            const won = isWinner(test, opt.label);
+            const tied = isTie(test);
+            const cls = tied ? 'tied' : won ? 'winner' : 'loser';
+            const imgUrl = getImageUrl(opt.name, 400);
+
+            return `
+            <div class="test-thumb-option ${cls}">
+                <div class="option-label">Option ${opt.label}${won ? ' - Winner' : tied ? ' - Tie' : ''}</div>
+                ${won ? '<div class="winner-badge">WIN</div>' : ''}
+                ${imgUrl ? `<img src="${imgUrl}" alt="${opt.name}" loading="lazy" onerror="this.parentElement.querySelector('.thumb-name').style.fontWeight='bold'">` : '<div style="width:100%;aspect-ratio:16/9;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:11px">No image</div>'}
+                <div class="thumb-name">${opt.name}</div>
+            </div>`;
+        }).join('');
+
+        return `
+        <div class="test-card ${resultClass}">
+            <div class="test-header">
+                <div class="test-header-left">
+                    <div class="test-num">#${test.num}</div>
+                    <div class="test-meta">
+                        <span>${test.start}</span>
+                        <span>${test.duration}h</span>
+                        <span>${test.tester}</span>
+                    </div>
+                </div>
+                <a href="${url}" target="_blank" class="slack-link">View in Slack &#x2197;</a>
+            </div>
+            <div class="test-thumbs">${thumbsHtml}</div>
+            <div class="test-finding">${test.finding}${test.watchTime ? ` <strong>(${test.watchTime}% watch time share)</strong>` : ''}</div>
+        </div>`;
+    }).join('');
+}
+
+// ========== CHARTS ==========
+let timelineChart = null;
+let winrateChart = null;
+let evolutionChart = null;
+
+function renderTimelineChart() {
+    const ctx = document.getElementById('timeline-chart').getContext('2d');
+    if (timelineChart) timelineChart.destroy();
+
+    const data = TESTS.map(t => ({
+        label: `Test #${t.num}`,
+        duration: t.duration,
+        winner: getWinnerName(t)
+    }));
+
+    timelineChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.map(d => d.label),
+            datasets: [{
+                label: 'Duration (hours)',
+                data: data.map(d => d.duration),
+                backgroundColor: '#4C72B0CC',
+                borderColor: '#4C72B0',
+                borderWidth: 1,
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        afterLabel: ctx => `Winner: ${data[ctx.dataIndex].winner}`
+                    }
+                }
+            },
+            scales: { y: { beginAtZero: true, title: { display: true, text: 'Hours' } } }
+        }
+    });
+}
+
+function renderWinrateChart() {
+    const ctx = document.getElementById('winrate-chart').getContext('2d');
+    if (winrateChart) winrateChart.destroy();
+
+    const thumbs = Object.values(thumbStats)
+        .filter(t => t.tested >= 3)
+        .sort((a, b) => (b.won / b.tested) - (a.won / a.tested))
+        .slice(0, 12);
+
+    winrateChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: thumbs.map(t => t.name.length > 30 ? t.name.slice(0, 28) + '...' : t.name),
+            datasets: [
+                { label: 'Wins', data: thumbs.map(t => t.won), backgroundColor: '#28a74599', borderColor: '#28a745', borderWidth: 1 },
+                { label: 'Losses', data: thumbs.map(t => t.lost), backgroundColor: '#dc354599', borderColor: '#dc3545', borderWidth: 1 },
+                { label: 'Ties', data: thumbs.map(t => t.tied), backgroundColor: '#ffc10799', borderColor: '#ffc107', borderWidth: 1 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            indexAxis: 'y',
+            scales: { x: { stacked: true, beginAtZero: true }, y: { stacked: true } },
+            plugins: { legend: { position: 'top' } }
+        }
+    });
+}
+
+function renderEvolutionChart() {
+    const ctx = document.getElementById('evolution-chart').getContext('2d');
+    if (evolutionChart) evolutionChart.destroy();
+
+    const topNames = Object.values(thumbStats)
+        .filter(t => t.tested >= 4)
+        .sort((a, b) => b.tested - a.tested)
+        .slice(0, 6);
+
+    const colors = ['#4C72B0', '#DD8452', '#55A868', '#C44E52', '#8172B3', '#937860'];
+
+    const datasets = topNames.map((t, i) => {
+        let cumWins = 0;
+        const points = t.tests.map(({ test, label }) => {
+            if (isWinner(test, label)) cumWins++;
+            return { x: new Date(test.start), y: cumWins };
+        });
+        return {
+            label: t.name.length > 25 ? t.name.slice(0, 23) + '...' : t.name,
+            data: points,
+            borderColor: colors[i % colors.length],
+            backgroundColor: colors[i % colors.length] + '20',
+            borderWidth: 2, tension: 0.3, pointRadius: 4, fill: false
+        };
+    });
+
+    evolutionChart = new Chart(ctx, {
+        type: 'line',
+        data: { datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: {
+                x: { type: 'time', time: { unit: 'day' }, title: { display: true, text: 'Date' } },
+                y: { beginAtZero: true, title: { display: true, text: 'Cumulative Wins' }, ticks: { stepSize: 1 } }
+            },
+            plugins: { legend: { position: 'top', labels: { usePointStyle: true } } }
+        }
+    });
+}
+
+function renderFindings() {
+    const findings = [
+        {
+            title: "Graph thumbnails are the dominant concept",
+            detail: "Since first appearing in Test #18, graph thumbnails ('everyone dies graph' and variants) have won consistently. They beat WTF head-to-head, beat Congressman, beat Split Face. The concept is robust — specific execution matters less than the concept itself.",
+            type: "positive"
+        },
+        {
+            title: "WTF won A/B tests but may have hurt overall views",
+            detail: "WTF was the clearest head-to-head winner in early testing (Tests #5-14), but overall views dropped significantly during its reign. This suggests A/B test winners don't always translate to algorithm success. The team observed a 'distributional shift' and moved away from profane thumbnails.",
+            type: "warning"
+        },
+        {
+            title: "Glowing comment thumbnails catastrophically underperformed",
+            detail: "Test #23 was described as 'the most intense result I've ever seen' — the glowing comment concept lost dramatically. Despite being a popular strategy for other channels, it didn't work here.",
+            type: "negative"
+        },
+        {
+            title: "A/B test results are not fully transitive",
+            detail: "The team discovered that A > B and B > C doesn't guarantee A > C. This, combined with the distributional shift observation, suggests thumbnail performance is context-dependent and audience-composition-dependent.",
+            type: "warning"
+        },
+        {
+            title: "Person/face visibility matters — but bigger isn't better",
+            detail: "Test #4 showed thumbnails with no visible person/book clearly underperformed. However, making faces bigger didn't help (Test #6). There's a sweet spot.",
+            type: "neutral"
+        },
+        {
+            title: "Late-breaking: Utopian landscape made a comeback",
+            detail: "Test #31 (March 24-25) showed a utopian concept vastly outperforming the graph that had been dominant. This may indicate another distributional shift, or that the audience is ready for something new.",
+            type: "warning"
+        }
+    ];
+
+    const typeColors = { positive: '#d4edda', negative: '#f8d7da', warning: '#fff3cd', neutral: '#e2e3e5' };
+    const typeBorders = { positive: '#28a745', negative: '#dc3545', warning: '#ffc107', neutral: '#6c757d' };
+
+    document.getElementById('findings-content').innerHTML = findings.map(f => `
+        <div style="padding:14px 18px; margin-bottom:12px; border-radius:6px; background:${typeColors[f.type]}; border-left:4px solid ${typeBorders[f.type]};">
+            <div style="font-weight:600; font-size:14px; margin-bottom:4px;">${f.title}</div>
+            <div style="font-size:13px; color:var(--text-secondary);">${f.detail}</div>
+        </div>
+    `).join('');
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tabName) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+
+    if (tabName === 'timeline' && !document.getElementById('test-list').innerHTML) {
+        renderTestList();
+    }
+    if (tabName === 'insights' && !winrateChart) {
+        renderTimelineChart();
+        renderWinrateChart();
+        renderEvolutionChart();
+        renderFindings();
+    }
+}
+
+// ========== INIT ==========
+renderKPIs();
+renderThumbGrid();
+</script>
+</body>
+</html>
