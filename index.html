@@ -478,6 +478,8 @@
             </div>
             <span id="active-filter-label" style="font-size:12px; color:#4C72B0; font-weight:600; display:none"></span>
             <button class="filter-clear" id="filter-clear-btn" onclick="clearThumbFilter()" style="display:none">Clear filter</button>
+            <span style="margin-left:auto"></span>
+            <button class="filter-clear" id="sort-toggle-btn" onclick="toggleTimelineSort()" style="font-weight:500">Newest first &#x25BC;</button>
         </div>
         <div id="test-list" class="test-list"></div>
     </div>
@@ -960,8 +962,8 @@ function renderKPIs() {
     const uniqueThumbs = Object.keys(thumbStats).length;
 
     const topThumbs = Object.values(thumbStats)
-        .filter(t => t.tested >= 3)
-        .sort((a, b) => (b.won / b.tested) - (a.won / a.tested));
+        .filter(t => t.tested >= 2)
+        .sort((a, b) => b.won - a.won || (b.won / b.tested) - (a.won / a.tested));
     const best = topThumbs[0];
 
     document.getElementById('kpi-row').innerHTML = `
@@ -978,7 +980,7 @@ function renderKPIs() {
 <div class="kpi-card">
             <div class="kpi-label">Top Thumbnail</div>
             <div class="kpi-value" style="font-size:16px">${best ? best.name : 'N/A'}</div>
-            <div class="kpi-detail">${best ? Math.round((best.won / best.tested) * 100) + '% win rate (' + best.won + '/' + best.tested + ')' : ''}</div>
+            <div class="kpi-detail">${best ? best.won + ' wins out of ' + best.tested + ' tests (' + Math.round((best.won / best.tested) * 100) + '%)' : ''}</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Unique Thumbnails</div>
@@ -1152,9 +1154,18 @@ document.addEventListener('click', (e) => {
     }
 });
 
+let timelineSortNewest = true;
+
+function toggleTimelineSort() {
+    timelineSortNewest = !timelineSortNewest;
+    const btn = document.getElementById('sort-toggle-btn');
+    btn.innerHTML = timelineSortNewest ? 'Newest first &#x25BC;' : 'Oldest first &#x25B2;';
+    renderTestList();
+}
+
 function renderTestList() {
     const list = document.getElementById('test-list');
-    let tests = [...TESTS].reverse();
+    let tests = timelineSortNewest ? [...TESTS].reverse() : [...TESTS];
 
     if (activeThumbFilter) {
         tests = tests.filter(t => {
