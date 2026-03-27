@@ -609,7 +609,8 @@ const TESTS = [
         optionB: "I'm more worried now yellow text",
         optionC: "If anyone builds it white text over silhouette",
         winner: "B",
-        finding: "Option B had huge lead initially, evened out but stayed ahead"
+        finding: "Option B had huge lead initially, evened out but stayed ahead",
+        pctA: 32.1, pctB: 38.6, pctC: 29.4
     },
     {
         num: 2, start: "2026-03-10 18:57", end: "2026-03-10 22:32", duration: 3.6,
@@ -618,7 +619,8 @@ const TESTS = [
         optionB: "I'm more worried now yellow text",
         optionC: "We're not ready for superintelligence",
         winner: "B",
-        finding: "Title variations test - sticking with 'If Anyone Builds It Everyone Dies' title"
+        finding: "Title variations test - sticking with 'If Anyone Builds It Everyone Dies' title",
+        pctA: 36.4, pctB: 38.2, pctC: 25.4
     },
     {
         num: 3, start: "2026-03-10 22:57", end: "2026-03-11 06:57", duration: 8.0,
@@ -627,7 +629,8 @@ const TESTS = [
         optionB: "I'm more worried now yellow text + The AI book freaking out nat sec advisors",
         optionC: "Green utopia",
         winner: "B",
-        finding: "New title 'The AI book that's freaking out national security advisors' outperformed"
+        finding: "New title 'The AI book that's freaking out national security advisors' outperformed",
+        pctA: 34.3, pctB: 36.2, pctC: 29.6
     },
     {
         num: 4, start: "2026-03-11 07:13", end: "2026-03-11 10:16", duration: 3.0,
@@ -636,7 +639,8 @@ const TESTS = [
         optionB: "Book title over TVs",
         optionC: "Everyone dies (yes, everyone) white sansserif",
         winner: "A",
-        finding: "No person/book visible clearly underperformed"
+        finding: "No person/book visible clearly underperformed",
+        pctA: 34.8, pctB: 28.3, pctC: 36.9
     },
     {
         num: 5, start: "2026-03-11 12:00", end: "2026-03-11 13:35", duration: 1.6,
@@ -646,8 +650,7 @@ const TESTS = [
         optionC: "What the fuck calm face",
         winner: "C",
         finding: "WTF clearest winner yet - 'not thrilled about it'",
-        watchTime: 40.3,
-        pctC: 40.3
+        pctA: 32.7, pctB: 26.9, pctC: 40.3
     },
     {
         num: 6, start: "2026-03-11 13:55", end: "2026-03-11 18:41", duration: 4.8,
@@ -656,7 +659,8 @@ const TESTS = [
         optionB: "WTF + long combined title",
         optionC: "Everyone dies (yes everyone) skeptic new still",
         winner: "A",
-        finding: "WTF + 'AI book freaking out' clear outperformer. Bigger face underperformed"
+        finding: "WTF + 'AI book freaking out' clear outperformer. Bigger face underperformed",
+        pctA: 35.4, pctB: 33.2, pctC: 31.4
     },
     {
         num: 7, start: "2026-03-11 18:45", end: "2026-03-11 20:09", duration: 1.4,
@@ -665,7 +669,8 @@ const TESTS = [
         optionB: "Trained not to bite electronic shark",
         optionC: "AI is a black box",
         winner: "A",
-        finding: "Shark flopped"
+        finding: "Shark flopped",
+        pctA: 41.0, pctB: 23.2, pctC: 35.8
     },
     {
         num: 8, start: "2026-03-11 22:55", end: "2026-03-12 07:07", duration: 8.2,
@@ -674,7 +679,8 @@ const TESTS = [
         optionB: "What the fuck calm face + straightforward argument",
         optionC: "You don't get what you train for split world",
         winner: "AB",
-        finding: "A and B tied. WTF a clear winner, two titles work equally well with it"
+        finding: "A and B tied. WTF a clear winner, two titles work equally well with it",
+        pctA: 36.9, pctB: 37.1, pctC: 26.1
     },
     {
         num: 9, start: "2026-03-12 08:01", end: "2026-03-12 10:55", duration: 2.9,
@@ -683,7 +689,8 @@ const TESTS = [
         optionB: "What the fuck with hand and book",
         optionC: "What the fuck aric as U with globe",
         winner: "C",
-        finding: "Cinematic still from video won. Niel predicted middle would lose (correct!)"
+        finding: "Cinematic still from video won. Niel predicted middle would lose (correct!)",
+        pctA: 31.1, pctB: 28.9, pctC: 40.0
     },
     {
         num: 10, start: "2026-03-12 11:00", end: "2026-03-12 16:52", duration: 5.9,
@@ -692,7 +699,8 @@ const TESTS = [
         optionB: "What the fuck calm face + straightforward argument",
         optionC: "What the fuck calm face + If Anyone Builds It Everyone Dies",
         winner: "TIE",
-        finding: "Titles roughly equal (IABIED slightly ahead). No significant difference."
+        finding: "Titles roughly equal (IABIED slightly ahead). No significant difference.",
+        pctA: 34.4, pctB: 31.7, pctC: 33.9
     },
     {
         num: 11, start: "2026-03-12 17:03", end: "2026-03-12 18:24", duration: 1.3,
@@ -702,8 +710,7 @@ const TESTS = [
         optionC: "What the fuck green utopia",
         winner: "C",
         finding: "New winner by surprisingly large amount",
-        watchTime: 41.1,
-        pctC: 41.1
+        pctA: 33.8, pctB: 25.1, pctC: 41.1
     },
     {
         num: 12, start: "2026-03-12 18:32", end: "2026-03-12 20:03", duration: 1.5,
@@ -712,7 +719,8 @@ const TESTS = [
         optionB: "What the fuck green utopia + freaking out advisors",
         optionC: "What the fuck purple utopia + freaking out advisors",
         winner: "C",
-        finding: "Purple utopia won - Aric's prediction was completely wrong"
+        finding: "Purple utopia won - Aric's prediction was completely wrong",
+        pctA: 22.5, pctB: 37.2, pctC: 40.3
     },
     {
         num: 13, start: "2026-03-12 22:15", end: "2026-03-12 23:52", duration: 1.6,
@@ -721,7 +729,8 @@ const TESTS = [
         optionB: "What the fuck purple utopia with ?!?",
         optionC: "What the fuck aric as U with globe sharp",
         winner: "B",
-        finding: "?!? variant won, stopped early"
+        finding: "?!? variant won, stopped early",
+        pctA: 34.0, pctB: 36.4, pctC: 29.6
     },
     {
         num: 14, start: "2026-03-13 00:55", end: "2026-03-13 02:25", duration: 1.5,
@@ -730,7 +739,8 @@ const TESTS = [
         optionB: "What the fuck purple utopia with ?!?",
         optionC: "Fuck this purple utopia",
         winner: "A",
-        finding: "Stopped early"
+        finding: "Stopped early",
+        pctA: 37.4, pctB: 31.3, pctC: 31.3
     },
     {
         num: 15, start: "2026-03-13 03:30", end: "2026-03-13 07:36", duration: 4.1,
@@ -739,7 +749,8 @@ const TESTS = [
         optionB: "Everyone dies (yes everyone) white sansserif",
         optionC: "What the fuck aric as U with globe",
         winner: "TIE",
-        finding: "All roughly tied"
+        finding: "All roughly tied",
+        pctA: 33.8, pctB: 32.0, pctC: 34.2
     },
     {
         num: 16, start: "2026-03-13 08:02", end: "2026-03-13 11:59", duration: 4.0,
@@ -748,7 +759,8 @@ const TESTS = [
         optionB: "What extinction looks like purple utopia",
         optionC: "What extinction looks like aric with light",
         winner: "A",
-        finding: "Distributional shift confirmed. Things changed a lot in 2 days."
+        finding: "Distributional shift confirmed. Things changed a lot in 2 days.",
+        pctA: 34.3, pctB: 33.7, pctC: 32.0
     },
     {
         num: 17, start: "2026-03-13 16:15", end: "2026-03-13 19:55", duration: 3.7,
@@ -757,7 +769,8 @@ const TESTS = [
         optionB: "I'm more worried now yellow text",
         optionC: "If anyone builds it everyone dies red text over still zoomed out",
         winner: "A",
-        finding: "EVERYONE DIES stayed on top"
+        finding: "EVERYONE DIES stayed on top",
+        pctA: 36.6, pctB: 31.6, pctC: 31.8
     },
     {
         num: 18, start: "2026-03-13 20:05", end: "2026-03-13 23:30", duration: 3.4,
@@ -766,7 +779,8 @@ const TESTS = [
         optionB: "Ascent of man",
         optionC: "Everyone dies graph",
         winner: "C",
-        finding: "Graph first appeared and won. Could look better with more pop."
+        finding: "Graph first appeared and won. Could look better with more pop.",
+        pctA: 33.8, pctB: 23.9, pctC: 42.2
     },
     {
         num: 19, start: "2026-03-14 03:30", end: "2026-03-14 07:36", duration: 4.1,
