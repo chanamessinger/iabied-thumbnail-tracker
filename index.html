@@ -957,6 +957,15 @@ function computeThumbStats() {
 const thumbStats = computeThumbStats();
 
 // ========== UNDEFEATED CHAMPIONS ==========
+// Normalize compound names ("WTF + title") to base thumbnail
+function baseThumb(name) {
+    const key = name.toLowerCase().trim();
+    if (COMPOUND_BASES[key]) return COMPOUND_BASES[key];
+    const plus = key.indexOf(' + ');
+    if (plus > -1) return key.substring(0, plus);
+    return key;
+}
+
 function computeUndefeatedChampions() {
     const winners = {};
     const defeated = new Set();
@@ -964,10 +973,10 @@ function computeUndefeatedChampions() {
         const opts = getOptions(test);
         if (!isTie(test)) {
             opts.forEach(o => {
-                const key = o.name.toLowerCase().trim();
+                const key = baseThumb(o.name);
                 if (isWinner(test, o.label)) {
-                    if (!winners[key]) winners[key] = { name: o.name, firstWin: test.num, lastWin: test.num };
-                    else winners[key].lastWin = test.num;
+                    if (!winners[key]) winners[key] = { name: o.name, key, firstWin: test.num, lastWin: test.num };
+                    else { winners[key].lastWin = test.num; winners[key].name = o.name; }
                 } else {
                     defeated.add(key);
                 }
@@ -1223,8 +1232,7 @@ function renderTestList() {
             <div class="test-thumb-option ${cls}">
                 <div class="option-label">Option ${opt.label}${won ? ' - Winner' : tied ? ' - Tie' : ''}${pct ? ' (' + pct + '%)' : ''}</div>
                 ${won ? '<div class="winner-badge">WIN</div>' : ''}
-                ${imgUrl ? `<img src="${imgUrl}" alt="${thumbName}" loading="lazy" onerror="this.parentElement.querySelector('.thumb-name').style.fontWeight='bold'">` : '<div style="width:100%;aspect-ratio:16/9;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:11px">No image</div>'}
-                <div class="thumb-name">${thumbName}</div>
+                ${imgUrl ? `<img src="${imgUrl}" alt="${thumbName}" loading="lazy">` : '<div style="width:100%;aspect-ratio:16/9;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:11px">' + thumbName + '</div>'}
                 ${titleName ? `<div style="font-size:10px;color:var(--text-secondary);margin-top:2px;font-style:italic">Title: "${titleName}"</div>` : ''}
             </div>`;
         }).join('');
