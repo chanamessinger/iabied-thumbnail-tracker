@@ -646,7 +646,8 @@ const TESTS = [
         optionC: "What the fuck calm face",
         winner: "C",
         finding: "WTF clearest winner yet - 'not thrilled about it'",
-        watchTime: 40.3
+        watchTime: 40.3,
+        pctC: 40.3
     },
     {
         num: 6, start: "2026-03-11 13:55", end: "2026-03-11 18:41", duration: 4.8,
@@ -701,7 +702,8 @@ const TESTS = [
         optionC: "What the fuck green utopia",
         winner: "C",
         finding: "New winner by surprisingly large amount",
-        watchTime: 41.1
+        watchTime: 41.1,
+        pctC: 41.1
     },
     {
         num: 12, start: "2026-03-12 18:32", end: "2026-03-12 20:03", duration: 1.5,
@@ -954,11 +956,34 @@ function computeThumbStats() {
 
 const thumbStats = computeThumbStats();
 
+// ========== REIGNING CHAMPION ==========
+function computeReigningChampion() {
+    let champion = null;
+    let crownedIn = null;
+    for (const test of TESTS) {
+        const opts = getOptions(test);
+        if (!champion) {
+            const wn = getWinnerName(test);
+            if (wn && wn !== 'Tie') { champion = wn; crownedIn = test.num; }
+            continue;
+        }
+        // Is champion in this test?
+        const champInTest = opts.find(o => o.name.toLowerCase().trim() === champion.toLowerCase().trim());
+        if (!champInTest) continue;
+        if (isTie(test)) continue;
+        if (isWinner(test, champInTest.label)) continue;
+        // Champion lost - new champion
+        const wn = getWinnerName(test);
+        if (wn && wn !== 'Tie') { champion = wn; crownedIn = test.num; }
+    }
+    return { name: champion, since: crownedIn };
+}
+const reigningChamp = computeReigningChampion();
+
 // ========== RENDER KPIs ==========
 function renderKPIs() {
     const totalTests = TESTS.length;
     const totalHours = TESTS.reduce((s, t) => s + t.duration, 0).toFixed(1);
-    const uniqueTesters = [...new Set(TESTS.map(t => t.tester))].length;
     const uniqueThumbs = Object.keys(thumbStats).length;
 
     const topThumbs = Object.values(thumbStats)
@@ -978,9 +1003,9 @@ function renderKPIs() {
             <div class="kpi-detail">${(totalHours / 24).toFixed(1)} days of testing</div>
         </div>
 <div class="kpi-card">
-            <div class="kpi-label">Top Thumbnail</div>
-            <div class="kpi-value" style="font-size:16px">${best ? best.name : 'N/A'}</div>
-            <div class="kpi-detail">${best ? best.won + ' wins out of ' + best.tested + ' tests (' + Math.round((best.won / best.tested) * 100) + '%)' : ''}</div>
+            <div class="kpi-label">Reigning Champion</div>
+            <div class="kpi-value" style="font-size:16px">${reigningChamp.name || 'N/A'}</div>
+            <div class="kpi-detail">${reigningChamp.name ? 'Since test #' + reigningChamp.since + ' (never dethroned)' : ''}</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Unique Thumbnails</div>
@@ -1185,10 +1210,13 @@ function renderTestList() {
             const tied = isTie(test);
             const cls = tied ? 'tied' : won ? 'winner' : 'loser';
             const imgUrl = getImageUrl(opt.name, 400);
+            const pctKey = 'pct' + opt.label;
+            const pct = test[pctKey];
+            const pctHtml = pct ? `<div style="font-size:11px;font-weight:600;color:${won ? 'var(--positive)' : 'var(--text-secondary)'};margin-top:2px">${pct}%</div>` : '';
 
             return `
             <div class="test-thumb-option ${cls}">
-                <div class="option-label">Option ${opt.label}${won ? ' - Winner' : tied ? ' - Tie' : ''}</div>
+                <div class="option-label">Option ${opt.label}${won ? ' - Winner' : tied ? ' - Tie' : ''}${pct ? ' (' + pct + '%)' : ''}</div>
                 ${won ? '<div class="winner-badge">WIN</div>' : ''}
                 ${imgUrl ? `<img src="${imgUrl}" alt="${opt.name}" loading="lazy" onerror="this.parentElement.querySelector('.thumb-name').style.fontWeight='bold'">` : '<div style="width:100%;aspect-ratio:16/9;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:11px">No image</div>'}
                 <div class="thumb-name">${opt.name}</div>
