@@ -956,29 +956,30 @@ function computeThumbStats() {
 
 const thumbStats = computeThumbStats();
 
-// ========== REIGNING CHAMPION ==========
-function computeReigningChampion() {
-    let champion = null;
-    let crownedIn = null;
+// ========== UNDEFEATED CHAMPIONS ==========
+function computeUndefeatedChampions() {
+    const winners = {};
+    const defeated = new Set();
     for (const test of TESTS) {
         const opts = getOptions(test);
-        if (!champion) {
-            const wn = getWinnerName(test);
-            if (wn && wn !== 'Tie') { champion = wn; crownedIn = test.num; }
-            continue;
+        if (!isTie(test)) {
+            opts.forEach(o => {
+                const key = o.name.toLowerCase().trim();
+                if (isWinner(test, o.label)) {
+                    if (!winners[key]) winners[key] = { name: o.name, firstWin: test.num, lastWin: test.num };
+                    else winners[key].lastWin = test.num;
+                } else {
+                    defeated.add(key);
+                }
+            });
         }
-        // Is champion in this test?
-        const champInTest = opts.find(o => o.name.toLowerCase().trim() === champion.toLowerCase().trim());
-        if (!champInTest) continue;
-        if (isTie(test)) continue;
-        if (isWinner(test, champInTest.label)) continue;
-        // Champion lost - new champion
-        const wn = getWinnerName(test);
-        if (wn && wn !== 'Tie') { champion = wn; crownedIn = test.num; }
     }
-    return { name: champion, since: crownedIn };
+    return Object.entries(winners)
+        .filter(([key]) => !defeated.has(key))
+        .map(([, v]) => v)
+        .sort((a, b) => b.lastWin - a.lastWin);
 }
-const reigningChamp = computeReigningChampion();
+const undefeatedChamps = computeUndefeatedChampions();
 
 // ========== RENDER KPIs ==========
 function renderKPIs() {
@@ -1002,10 +1003,11 @@ function renderKPIs() {
             <div class="kpi-value">${totalHours}h</div>
             <div class="kpi-detail">${(totalHours / 24).toFixed(1)} days of testing</div>
         </div>
-<div class="kpi-card">
-            <div class="kpi-label">Reigning Champion</div>
-            <div class="kpi-value" style="font-size:16px">${reigningChamp.name || 'N/A'}</div>
-            <div class="kpi-detail">${reigningChamp.name ? 'Since test #' + reigningChamp.since + ' (never dethroned)' : ''}</div>
+<div class="kpi-card" style="grid-column: span 2">
+            <div class="kpi-label">Undefeated Champions (never lost a matchup)</div>
+            <div style="font-size:13px;margin-top:6px">${undefeatedChamps.map(c =>
+                '<div style="margin-bottom:4px"><strong>' + c.name + '</strong> <span style="color:var(--text-secondary);font-size:11px">— won test #' + c.firstWin + (c.firstWin !== c.lastWin ? '–' + c.lastWin : '') + '</span></div>'
+            ).join('') || 'None'}</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-label">Unique Thumbnails</div>
