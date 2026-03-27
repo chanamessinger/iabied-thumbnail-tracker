@@ -314,10 +314,10 @@
         .test-thumb-option.tied .pct-badge { color: #e0a800; }
 
         .video-title {
-            font-size: 10px;
-            color: var(--text-secondary);
-            margin-top: 3px;
-            font-style: italic;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-top: 4px;
             line-height: 1.3;
             word-break: break-word;
         }
@@ -668,7 +668,10 @@ const TESTS = [
         optionC: "Everyone dies (yes, everyone) white sansserif",
         winner: "A",
         finding: "No person/book visible clearly underperformed",
-        pctA: 34.8, pctB: 28.3, pctC: 36.9
+        pctA: 34.8, pctB: 28.3, pctC: 36.9,
+        titleA: "The AI book that's freaking out National Security Advisors",
+        titleB: "The AI book that's freaking out National Security Advisors",
+        titleC: "The AI book that's freaking out National Security Advisors"
     },
     {
         num: 5, start: "2026-03-11 12:00", end: "2026-03-11 13:35", duration: 1.6,
@@ -730,7 +733,10 @@ const TESTS = [
         optionC: "What the fuck aric as U with globe",
         winner: "C",
         finding: "Cinematic still from video won. Niel predicted middle would lose (correct!)",
-        pctA: 31.1, pctB: 28.9, pctC: 40.0
+        pctA: 31.1, pctB: 28.9, pctC: 40.0,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 10, start: "2026-03-12 11:00", end: "2026-03-12 16:52", duration: 5.9,
@@ -753,7 +759,10 @@ const TESTS = [
         optionC: "What the fuck green utopia",
         winner: "C",
         finding: "New winner by surprisingly large amount",
-        pctA: 33.8, pctB: 25.1, pctC: 41.1
+        pctA: 33.8, pctB: 25.1, pctC: 41.1,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 12, start: "2026-03-12 18:32", end: "2026-03-12 20:03", duration: 1.5,
@@ -776,7 +785,10 @@ const TESTS = [
         optionC: "What the fuck aric as U with globe sharp",
         winner: "B",
         finding: "?!? variant won, stopped early",
-        pctA: 34.0, pctB: 36.4, pctC: 29.6
+        pctA: 34.0, pctB: 36.4, pctC: 29.6,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 14, start: "2026-03-13 00:55", end: "2026-03-13 02:25", duration: 1.5,
@@ -786,7 +798,10 @@ const TESTS = [
         optionC: "Fuck this purple utopia",
         winner: "A",
         finding: "Stopped early",
-        pctA: 37.4, pctB: 31.3, pctC: 31.3
+        pctA: 37.4, pctB: 31.3, pctC: 31.3,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 15, start: "2026-03-13 03:30", end: "2026-03-13 07:36", duration: 4.1,
@@ -796,7 +811,10 @@ const TESTS = [
         optionC: "What the fuck aric as U with globe",
         winner: "TIE",
         finding: "All roughly tied",
-        pctA: 33.8, pctB: 32.0, pctC: 34.2
+        pctA: 33.8, pctB: 32.0, pctC: 34.2,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 16, start: "2026-03-13 08:02", end: "2026-03-13 11:59", duration: 4.0,
@@ -806,7 +824,10 @@ const TESTS = [
         optionC: "What extinction looks like aric with light",
         winner: "A",
         finding: "Distributional shift confirmed. Things changed a lot in 2 days.",
-        pctA: 34.3, pctB: 33.7, pctC: 32.0
+        pctA: 34.3, pctB: 33.7, pctC: 32.0,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 17, start: "2026-03-13 16:15", end: "2026-03-13 19:55", duration: 3.7,
@@ -816,7 +837,10 @@ const TESTS = [
         optionC: "If anyone builds it everyone dies red text over still zoomed out",
         winner: "A",
         finding: "EVERYONE DIES stayed on top",
-        pctA: 36.6, pctB: 31.6, pctC: 31.8
+        pctA: 36.6, pctB: 31.6, pctC: 31.8,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 18, start: "2026-03-13 20:05", end: "2026-03-13 23:30", duration: 3.4,
@@ -826,7 +850,10 @@ const TESTS = [
         optionC: "Everyone dies graph",
         winner: "C",
         finding: "Graph first appeared and won. Could look better with more pop.",
-        pctA: 33.8, pctB: 23.9, pctC: 42.2
+        pctA: 33.8, pctB: 23.9, pctC: 42.2,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 19, start: "2026-03-14 03:30", end: "2026-03-14 07:36", duration: 4.1,
@@ -836,7 +863,10 @@ const TESTS = [
         optionC: "Everyone dies graph with white skull",
         winner: "A",
         finding: "Plain graph beat skull variants",
-        pctA: 34.6, pctB: 33.3, pctC: 32.1
+        pctA: 34.6, pctB: 33.3, pctC: 32.1,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 20, start: "2026-03-14 11:10", end: "2026-03-15 15:30", duration: 28.3,
@@ -846,7 +876,10 @@ const TESTS = [
         optionC: "Everyone dies ascent of man",
         winner: "AB",
         finding: "A and B tied. Taking long to reach significance.",
-        pctA: 36.2, pctB: 36.3, pctC: 27.5
+        pctA: 36.2, pctB: 36.3, pctC: 27.5,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 21, start: "2026-03-15 16:20", end: "2026-03-15 18:11", duration: 1.9,
@@ -856,7 +889,10 @@ const TESTS = [
         optionC: "What the fuck calm face",
         winner: "A",
         finding: "Graph beat WTF head-to-head. Ascent of Man clearly underperformed.",
-        pctA: 36.2, pctB: 34.7, pctC: 29.1
+        pctA: 36.2, pctB: 34.7, pctC: 29.1,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 22, start: "2026-03-15 18:12", end: "2026-03-15 23:02", duration: 4.8,
@@ -866,7 +902,10 @@ const TESTS = [
         optionC: "If anyone builds it everyone dies sansserif over globe",
         winner: "A",
         finding: "Graph won again",
-        pctA: 40.3, pctB: 27.2, pctC: 32.5
+        pctA: 40.3, pctB: 27.2, pctC: 32.5,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 23, start: "2026-03-16 10:00", end: "2026-03-16 11:57", duration: 2.0,
@@ -889,7 +928,10 @@ const TESTS = [
         optionC: "25% chance",
         winner: "A",
         finding: "Variance test. Last hour did worse than previous.",
-        pctA: 45.4, pctB: 32.3, pctC: 22.3
+        pctA: 45.4, pctB: 32.3, pctC: 22.3,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 25, start: "2026-03-16 13:20", end: "2026-03-16 14:02", duration: 0.7,
@@ -912,7 +954,10 @@ const TESTS = [
         optionC: "Most important book of the decade",
         winner: "A",
         finding: "Plain graph still on top. Views continuing to drop.",
-        pctA: 37.2, pctB: 35.3, pctC: 27.5
+        pctA: 37.2, pctB: 35.3, pctC: 27.5,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 27, start: "2026-03-16 16:15", end: "2026-03-16 19:22", duration: 3.1,
@@ -922,7 +967,10 @@ const TESTS = [
         optionC: "You don't get what you train for text",
         winner: "B",
         finding: "Multi-color graph variant won",
-        pctA: 42.4, pctB: 44.4, pctC: 13.2
+        pctA: 42.4, pctB: 44.4, pctC: 13.2,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 28, start: "2026-03-17 12:10", end: "2026-03-17 14:10", duration: 2.0,
@@ -932,7 +980,10 @@ const TESTS = [
         optionC: "What the fuck purple utopia",
         winner: "B",
         finding: "Graph over Aric won",
-        pctA: 24.2, pctB: 38.4, pctC: 37.3
+        pctA: 24.2, pctB: 38.4, pctC: 37.3,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     }
 ];
 
