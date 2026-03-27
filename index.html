@@ -1214,14 +1214,18 @@ function renderTestList() {
             const imgUrl = getImageUrl(opt.name, 400);
             const pctKey = 'pct' + opt.label;
             const pct = test[pctKey];
-            const pctHtml = pct ? `<div style="font-size:11px;font-weight:600;color:${won ? 'var(--positive)' : 'var(--text-secondary)'};margin-top:2px">${pct}%</div>` : '';
+            // Split "thumbnail + title" on " + "
+            const plusIdx = opt.name.indexOf(' + ');
+            const thumbName = plusIdx > -1 ? opt.name.substring(0, plusIdx) : opt.name;
+            const titleName = plusIdx > -1 ? opt.name.substring(plusIdx + 3) : null;
 
             return `
             <div class="test-thumb-option ${cls}">
                 <div class="option-label">Option ${opt.label}${won ? ' - Winner' : tied ? ' - Tie' : ''}${pct ? ' (' + pct + '%)' : ''}</div>
                 ${won ? '<div class="winner-badge">WIN</div>' : ''}
-                ${imgUrl ? `<img src="${imgUrl}" alt="${opt.name}" loading="lazy" onerror="this.parentElement.querySelector('.thumb-name').style.fontWeight='bold'">` : '<div style="width:100%;aspect-ratio:16/9;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:11px">No image</div>'}
-                <div class="thumb-name">${opt.name}</div>
+                ${imgUrl ? `<img src="${imgUrl}" alt="${thumbName}" loading="lazy" onerror="this.parentElement.querySelector('.thumb-name').style.fontWeight='bold'">` : '<div style="width:100%;aspect-ratio:16/9;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:11px">No image</div>'}
+                <div class="thumb-name">${thumbName}</div>
+                ${titleName ? `<div style="font-size:10px;color:var(--text-secondary);margin-top:2px;font-style:italic">Title: "${titleName}"</div>` : ''}
             </div>`;
         }).join('');
 
