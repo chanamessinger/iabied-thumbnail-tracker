@@ -975,12 +975,7 @@ function renderKPIs() {
             <div class="kpi-value">${totalHours}h</div>
             <div class="kpi-detail">${(totalHours / 24).toFixed(1)} days of testing</div>
         </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Testers</div>
-            <div class="kpi-value">${uniqueTesters}</div>
-            <div class="kpi-detail">Aric, Chana, Nik, Sage</div>
-        </div>
-        <div class="kpi-card">
+<div class="kpi-card">
             <div class="kpi-label">Top Thumbnail</div>
             <div class="kpi-value" style="font-size:16px">${best ? best.name : 'N/A'}</div>
             <div class="kpi-detail">${best ? Math.round((best.won / best.tested) * 100) + '% win rate (' + best.won + '/' + best.tested + ')' : ''}</div>
