@@ -303,6 +303,25 @@
             word-break: break-word;
         }
 
+        .pct-badge {
+            font-size: 18px;
+            font-weight: 800;
+            margin-top: 4px;
+            letter-spacing: -0.5px;
+        }
+        .test-thumb-option.winner .pct-badge { color: var(--positive); }
+        .test-thumb-option.loser .pct-badge { color: var(--negative); }
+        .test-thumb-option.tied .pct-badge { color: #e0a800; }
+
+        .video-title {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 3px;
+            font-style: italic;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
         .winner-badge {
             position: absolute;
             top: -8px;
@@ -610,7 +629,10 @@ const TESTS = [
         optionC: "If anyone builds it white text over silhouette",
         winner: "B",
         finding: "Option B had huge lead initially, evened out but stayed ahead",
-        pctA: 32.1, pctB: 38.6, pctC: 29.4
+        pctA: 32.1, pctB: 38.6, pctC: 29.4,
+        titleA: "The straightforward argument that AI will kill everyone",
+        titleB: "If Anyone Builds It, Everyone Dies",
+        titleC: "The straightforward argument that AI will kill everyone"
     },
     {
         num: 2, start: "2026-03-10 18:57", end: "2026-03-10 22:32", duration: 3.6,
@@ -620,7 +642,10 @@ const TESTS = [
         optionC: "We're not ready for superintelligence",
         winner: "B",
         finding: "Title variations test - sticking with 'If Anyone Builds It Everyone Dies' title",
-        pctA: 36.4, pctB: 38.2, pctC: 25.4
+        pctA: 36.4, pctB: 38.2, pctC: 25.4,
+        titleA: "If Anyone Builds It, Everyone Dies",
+        titleB: "If Anyone Builds It, Everyone Dies",
+        titleC: "The straightforward argument that AI will kill everyone"
     },
     {
         num: 3, start: "2026-03-10 22:57", end: "2026-03-11 06:57", duration: 8.0,
@@ -630,7 +655,10 @@ const TESTS = [
         optionC: "Green utopia",
         winner: "B",
         finding: "New title 'The AI book that's freaking out national security advisors' outperformed",
-        pctA: 34.3, pctB: 36.2, pctC: 29.6
+        pctA: 34.3, pctB: 36.2, pctC: 29.6,
+        titleA: "If Anyone Builds It, Everyone Dies",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "We're Not Ready for the Future We're Building"
     },
     {
         num: 4, start: "2026-03-11 07:13", end: "2026-03-11 10:16", duration: 3.0,
@@ -650,7 +678,10 @@ const TESTS = [
         optionC: "What the fuck calm face",
         winner: "C",
         finding: "WTF clearest winner yet - 'not thrilled about it'",
-        pctA: 32.7, pctB: 26.9, pctC: 40.3
+        pctA: 32.7, pctB: 26.9, pctC: 40.3,
+        titleA: "The AI book that's freaking out National Security Advisors",
+        titleB: "This book's conclusion is insane. Its logic isn't.",
+        titleC: "The AI book that's freaking out National Security Advisors"
     },
     {
         num: 6, start: "2026-03-11 13:55", end: "2026-03-11 18:41", duration: 4.8,
@@ -660,7 +691,10 @@ const TESTS = [
         optionC: "Everyone dies (yes everyone) skeptic new still",
         winner: "A",
         finding: "WTF + 'AI book freaking out' clear outperformer. Bigger face underperformed",
-        pctA: 35.4, pctB: 33.2, pctC: 31.4
+        pctA: 35.4, pctB: 33.2, pctC: 31.4,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "If Anyone Builds It, Everyone Dies: The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 7, start: "2026-03-11 18:45", end: "2026-03-11 20:09", duration: 1.4,
@@ -670,7 +704,10 @@ const TESTS = [
         optionC: "AI is a black box",
         winner: "A",
         finding: "Shark flopped",
-        pctA: 41.0, pctB: 23.2, pctC: 35.8
+        pctA: 41.0, pctB: 23.2, pctC: 35.8,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "We know how to make Superintelligence. We don't know how to control it.",
+        titleC: "The book that's freaking out national security advisors"
     },
     {
         num: 8, start: "2026-03-11 22:55", end: "2026-03-12 07:07", duration: 8.2,
@@ -680,7 +717,10 @@ const TESTS = [
         optionC: "You don't get what you train for split world",
         winner: "AB",
         finding: "A and B tied. WTF a clear winner, two titles work equally well with it",
-        pctA: 36.9, pctB: 37.1, pctC: 26.1
+        pctA: 36.9, pctB: 37.1, pctC: 26.1,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The straightforward argument that AI will kill everyone",
+        titleC: "The straightforward argument that AI will kill everyone"
     },
     {
         num: 9, start: "2026-03-12 08:01", end: "2026-03-12 10:55", duration: 2.9,
@@ -700,7 +740,10 @@ const TESTS = [
         optionC: "What the fuck calm face + If Anyone Builds It Everyone Dies",
         winner: "TIE",
         finding: "Titles roughly equal (IABIED slightly ahead). No significant difference.",
-        pctA: 34.4, pctB: 31.7, pctC: 33.9
+        pctA: 34.4, pctB: 31.7, pctC: 33.9,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "The straightforward argument that AI will kill everyone",
+        titleC: "If Anyone Builds It, Everyone Dies"
     },
     {
         num: 11, start: "2026-03-12 17:03", end: "2026-03-12 18:24", duration: 1.3,
@@ -720,7 +763,10 @@ const TESTS = [
         optionC: "What the fuck purple utopia + freaking out advisors",
         winner: "C",
         finding: "Purple utopia won - Aric's prediction was completely wrong",
-        pctA: 22.5, pctB: 37.2, pctC: 40.3
+        pctA: 22.5, pctB: 37.2, pctC: 40.3,
+        titleA: "The future is not safe for humans",
+        titleB: "The AI book that's freaking out national security advisors",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 13, start: "2026-03-12 22:15", end: "2026-03-12 23:52", duration: 1.6,
@@ -830,7 +876,10 @@ const TESTS = [
         optionC: "Everyone dies graph over tvs",
         winner: "C",
         finding: "Graph over TVs won. Graph on its own similar. Glowing comment lost badly - most intense result ever.",
-        pctA: 43.2, pctB: 12.7, pctC: 44.1
+        pctA: 43.2, pctB: 12.7, pctC: 44.1,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "We Know How to Make AI Powerful. We Don't Know How to Control It.",
+        titleC: "Try to Disagree With This"
     },
     {
         num: 24, start: "2026-03-16 12:04", end: "2026-03-16 13:06", duration: 1.0,
@@ -850,7 +899,10 @@ const TESTS = [
         optionC: "If anyone builds it everyone dies split face",
         winner: "A",
         finding: "Nothing beats the graph",
-        pctA: 41.9, pctB: 22.3, pctC: 35.8
+        pctA: 41.9, pctB: 22.3, pctC: 35.8,
+        titleA: "The AI book that's freaking out national security advisors",
+        titleB: "If Anyone Builds It, Everyone Dies",
+        titleC: "The AI book that's freaking out national security advisors"
     },
     {
         num: 26, start: "2026-03-16 14:25", end: "2026-03-16 16:01", duration: 1.6,
@@ -1225,12 +1277,18 @@ function renderTestList() {
             const thumbName = plusIdx > -1 ? opt.name.substring(0, plusIdx) : opt.name;
             const titleName = plusIdx > -1 ? opt.name.substring(plusIdx + 3) : null;
 
+            // Get video title from test's titleA/titleB/titleC if available
+            const titleKey = 'title' + opt.label;
+            const videoTitle = test[titleKey] || null;
+
             return `
             <div class="test-thumb-option ${cls}">
-                <div class="option-label">Option ${opt.label}${won ? ' - Winner' : tied ? ' - Tie' : ''}${pct ? ' (' + pct + '%)' : ''}</div>
+                <div class="option-label">Option ${opt.label}${won ? ' - Winner' : tied ? ' - Tie' : ''}</div>
                 ${won ? '<div class="winner-badge">WIN</div>' : ''}
                 ${imgUrl ? `<img src="${imgUrl}" alt="${thumbName}" loading="lazy">` : '<div style="width:100%;aspect-ratio:16/9;background:#f0f0f0;border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:11px">' + thumbName + '</div>'}
-                ${titleName ? `<div style="font-size:10px;color:var(--text-secondary);margin-top:2px;font-style:italic">Title: "${titleName}"</div>` : ''}
+                ${pct ? `<div class="pct-badge">${pct}%</div>` : ''}
+                ${titleName ? `<div class="video-title">"${titleName}"</div>` : ''}
+                ${videoTitle ? `<div class="video-title">${videoTitle}</div>` : ''}
             </div>`;
         }).join('');
 
